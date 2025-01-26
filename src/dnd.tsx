@@ -175,6 +175,6 @@ export const Dropable: FC<DropableProps> = ({ children, onDrop }) => {
       if (isInRect) onDrop?.(e);
     });
     return unsubscribe;
-  }, []);
+  }, [onDrop]);
   return <BaseDropable ref={ref}>{children}</BaseDropable>;
 };

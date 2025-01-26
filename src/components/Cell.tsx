@@ -34,7 +34,8 @@ interface CellProps {
 export const Cell: FC<CellProps> = ({ row, column, data }) => {
   const boardContext = useContext(BoardContext);
 
-  const move = boardContext.move ?? (() => {});
+  // @ts-ignore
+  const move: BoardContext.move = boardContext.move;
 
   const indicator = row + column;
   const CellComponent = indicator % 2 ? CellBlack : CellWhite;
@@ -42,7 +43,7 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
   return (
     <Dropable
       onDrop={(e) => {
-        console.log("ON DROP", row, column, e);
+        console.log("ON DROP", row, column, e, boardContext.board);
         move(e.data.column, e.data.row, column, row);
       }}
     >

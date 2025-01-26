@@ -1,16 +1,19 @@
-import { useRef, useState, useCallback, createContext, FC } from "react";
+import { createContext, FC, useCallback, useReducer } from "react";
 import styled from "styled-components";
 import { DndProvider } from "../dnd";
 import { CELL_SIZE, ROW_COUNT, COLUMN_COUNT } from "../constants";
 import { FigureType } from "../types";
 import { Row } from "./Row";
+import { cloneDeep } from "lodash";
 
 interface FigureInfo {
   type: FigureType;
 }
 
+type BoardData = (FigureInfo | null)[][];
+
 const createField = () => {
-  const board: (FigureInfo | null)[][] = Array.from({ length: 8 }).map(() =>
+  const board: BoardData = Array.from({ length: 8 }).map(() =>
     Array.from({ length: 8 }).map(() => null)
   );
 
@@ -24,20 +27,79 @@ const createField = () => {
 
   return board;
 };
+enum BoardActions {
+  set,
+  delete,
+}
+
+interface BoardActionBase {
+  type: BoardActions;
+}
+
+interface Coords {
+  x: number;
+  y: number;
+}
+
+interface SetAction extends BoardActionBase {
+  type: BoardActions.set;
+  position: Coords;
+  data: FigureInfo;
+}
+
+interface DeleteAction extends BoardActionBase {
+  type: BoardActions.delete;
+  position: Coords;
+}
+
+type BoardAction = SetAction | DeleteAction;
+
+const boardReducer = (board: BoardData, action: BoardAction) => {
+  switch (action.type) {
+    case BoardActions.set: {
+      const newBoard = cloneDeep(board);
+      const { x, y } = action.position;
+      newBoard[y][x] = action.data;
+      return newBoard;
+    }
+    case BoardActions.delete: {
+      const newBoard = cloneDeep(board);
+      const { x, y } = action.position;
+      newBoard[y][x] = null;
+      return newBoard;
+    }
+    default: {
+      console.error("Undefined board action");
+      return board;
+    }
+  }
+};
+
+const boardSet = (x: number, y: number, data: FigureInfo): SetAction => ({
+  type: BoardActions.set,
+  position: { x, y },
+  data,
+});
+
+const boardDelete = (x: number, y: number): DeleteAction => ({
+  type: BoardActions.delete,
+  position: { x, y },
+});
 
 export const useBoard = () => {
-  const board = useRef(createField());
+  const [board, dispatch] = useReducer(boardReducer, createField());
 
-  const [, dummy] = useState("");
+  const move = (x0: number, y0: number, x1: number, y1: number) => {
+    if (x0 === x1 && y0 === y1) return;
+    const prevData = board[y0]?.[x0];
+    console.log("calll", prevData);
+    if (!prevData) return;
 
-  const move = useCallback((x0: number, y0: number, x1: number, y1: number) => {
-    dummy(`${x1}, ${y1}`);
-    const data = board.current?.[y0]?.[x0];
-    board.current[y1][x1] = data;
-    if (board.current?.[y0]?.[x0]) board.current[y0][x0] = null;
-  }, []);
+    dispatch(boardDelete(x0, y0));
+    dispatch(boardSet(x1, y1, prevData));
+  };
 
-  return { board: board.current, move };
+  return { board, move };
 };
 
 export type BoardContext = ReturnType<typeof useBoard>;
@@ -54,7 +116,7 @@ const Field = styled.div`
 export const Board: FC = () => {
   const boardContext = useBoard();
   const { board } = boardContext;
-  console.log("render");
+  console.log("render", board);
   return (
     <BoardContext.Provider value={boardContext}>
       <DndProvider>

@@ -87,9 +87,10 @@ const BaseDragable = styled.div`
 interface DragableProps {
   children: ReactElement;
   data: any;
+  onDrag?: () => void;
 }
 
-export const Dragable: FC<DragableProps> = ({ children, data }) => {
+export const Dragable: FC<DragableProps> = ({ children, data, onDrag }) => {
   const ref = useRef<HTMLDivElement>(null);
   const isDraging = useRef(false);
   const { setData, data: currentData, drop, setX, setY } = useDrag();
@@ -108,6 +109,7 @@ export const Dragable: FC<DragableProps> = ({ children, data }) => {
         element.style.position = "fixed";
         element.style.top = `${e.clientY}px`;
         element.style.left = `${e.clientX}px`;
+        element.style.zIndex = "1001";
         setX(e.clientX);
         setY(e.clientY);
       } else {
@@ -129,7 +131,7 @@ export const Dragable: FC<DragableProps> = ({ children, data }) => {
       onMouseDown={(e) => {
         console.log("calll", "down");
         e.preventDefault();
-
+        onDrag?.();
         if (!isEqual(currentData, data)) setData(data);
         isDraging.current = true;
       }}

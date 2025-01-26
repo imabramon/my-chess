@@ -15,6 +15,7 @@ interface FigureProps {
   row: number;
   column: number;
   data: any;
+  onDrag: () => void;
 }
 
 const IMAGE_BY_TYPE: Record<FigureType, string> = {
@@ -22,7 +23,7 @@ const IMAGE_BY_TYPE: Record<FigureType, string> = {
   WhitePawn: WhitePawn,
 };
 
-export const Figure: FC<FigureProps> = ({ row, column, data }) => {
+export const Figure: FC<FigureProps> = ({ row, column, data, onDrag }) => {
   const figureData = useMemo(
     () => ({ row, column, figureData: data }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -30,7 +31,7 @@ export const Figure: FC<FigureProps> = ({ row, column, data }) => {
   );
 
   return (
-    <Dragable data={figureData}>
+    <Dragable data={figureData} onDrag={onDrag}>
       <FigureImage src={IMAGE_BY_TYPE[data?.type as unknown as FigureType]} />
     </Dragable>
   );

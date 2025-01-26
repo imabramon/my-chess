@@ -1,13 +1,54 @@
 import { createContext, FC, useCallback, useReducer } from "react";
 import styled from "styled-components";
 import { DndProvider } from "../dnd";
-import { CELL_SIZE, ROW_COUNT, COLUMN_COUNT } from "../constants";
+import { CELL_SIZE, ROW_COUNT, COLUMN_COUNT, BOARD_SIZE } from "../constants";
 import { FigureType } from "../types";
 import { Row } from "./Row";
 import { cloneDeep } from "lodash";
+import { useSet } from "@uidotdev/usehooks";
 
 interface FigureInfo {
   type: FigureType;
+  legalMoves: (current: Coords, size: Coords) => string[];
+}
+
+class Queen implements FigureInfo {
+  type: FigureType = "WhiteQueen";
+
+  // Rewrite ChatGPT crap
+  legalMoves(current: Coords, boardSize: Coords): string[] {
+    const moves: string[] = [];
+
+    // Absolute Cinema
+    const { x: currentY, y: currentX } = current;
+    const { x: boardWidth, y: boardHeight } = boardSize;
+
+    function isWithinBoard(x: number, y: number): boolean {
+      return x >= 0 && x < boardWidth && y >= 0 && y < boardHeight;
+    }
+
+    function addMove(x: number, y: number): void {
+      if (isWithinBoard(x, y)) {
+        moves.push(`${x}, ${y}`);
+      }
+    }
+
+    for (let i = 0; i < boardWidth; i++) {
+      if (i !== currentX) addMove(i, currentY);
+    }
+    for (let j = 0; j < boardHeight; j++) {
+      if (j !== currentY) addMove(currentX, j);
+    }
+
+    for (let i = 1; i < Math.max(boardWidth, boardHeight); i++) {
+      addMove(currentX + i, currentY + i);
+      addMove(currentX - i, currentY + i);
+      addMove(currentX + i, currentY - i);
+      addMove(currentX - i, currentY - i);
+    }
+
+    return moves;
+  }
 }
 
 type BoardData = (FigureInfo | null)[][];
@@ -17,12 +58,11 @@ const createField = () => {
     Array.from({ length: 8 }).map(() => null)
   );
 
-  board[7][4] = {
-    type: "WhiteQueen",
-  };
+  board[7][4] = new Queen();
 
   board[6][4] = {
     type: "WhitePawn",
+    legalMoves: () => [],
   };
 
   return board;
@@ -88,6 +128,7 @@ const boardDelete = (x: number, y: number): DeleteAction => ({
 
 export const useBoard = () => {
   const [board, dispatch] = useReducer(boardReducer, createField());
+  const highlightedCells = useSet<string>([]);
 
   const move = (x0: number, y0: number, x1: number, y1: number) => {
     if (x0 === x1 && y0 === y1) return;
@@ -97,9 +138,16 @@ export const useBoard = () => {
 
     dispatch(boardDelete(x0, y0));
     dispatch(boardSet(x1, y1, prevData));
+    highlightedCells.clear();
   };
 
-  return { board, move };
+  const startMove = (x: number, y: number, data: FigureInfo) => {
+    const legal = data.legalMoves({ x, y }, BOARD_SIZE);
+    highlightedCells.clear();
+    legal.forEach(highlightedCells.add);
+  };
+
+  return { board, move, startMove, highlightedCells };
 };
 
 export type BoardContext = ReturnType<typeof useBoard>;

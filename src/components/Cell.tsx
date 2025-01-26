@@ -13,6 +13,8 @@ const BaseCell = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  box-sizing: border-box;
+  position: relative;
 `;
 
 const CellWhite = styled(BaseCell)`
@@ -31,11 +33,23 @@ interface CellProps {
   data: any;
 }
 
+const LegalPoint = styled.div`
+  position: absolute;
+  width: 25%;
+  height: 25%;
+  border-radius: 50%;
+  background-color: green;
+`;
+
 export const Cell: FC<CellProps> = ({ row, column, data }) => {
   const boardContext = useContext(BoardContext);
 
   // @ts-ignore
   const move: BoardContext.move = boardContext.move;
+  const highlightedCells = boardContext.highlightedCells;
+  const startMove = boardContext.startMove;
+
+  const isLegal = highlightedCells?.has(`${column}, ${row}`);
 
   const indicator = row + column;
   const CellComponent = indicator % 2 ? CellBlack : CellWhite;
@@ -49,10 +63,16 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
     >
       <CellComponent>
         {!!data ? (
-          <Figure row={row} column={column} data={data} />
+          <Figure
+            row={row}
+            column={column}
+            data={data}
+            onDrag={() => startMove?.(row, column, data)}
+          />
         ) : (
           `${row}, ${column}`
         )}
+        {!!isLegal && <LegalPoint />}
       </CellComponent>
     </Dropable>
   );

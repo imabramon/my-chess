@@ -40,7 +40,9 @@ export const useBoard = () => {
   return { board: board.current, move };
 };
 
-export const BoardContext = createContext<any>({});
+export type BoardContext = ReturnType<typeof useBoard>;
+
+export const BoardContext = createContext<Partial<BoardContext>>({});
 
 const Field = styled.div`
   display: flex;
@@ -50,10 +52,11 @@ const Field = styled.div`
 `;
 
 export const Board: FC = () => {
-  const { board, move } = useBoard();
+  const boardContext = useBoard();
+  const { board } = boardContext;
   console.log("render");
   return (
-    <BoardContext.Provider value={move}>
+    <BoardContext.Provider value={boardContext}>
       <DndProvider>
         <Field>
           {board.map((rowData, row) => (

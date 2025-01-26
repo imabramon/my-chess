@@ -32,7 +32,9 @@ interface CellProps {
 }
 
 export const Cell: FC<CellProps> = ({ row, column, data }) => {
-  const move = useContext(BoardContext);
+  const boardContext = useContext(BoardContext);
+
+  const move = boardContext.move ?? (() => {});
 
   const indicator = row + column;
   const CellComponent = indicator % 2 ? CellBlack : CellWhite;

@@ -4,6 +4,7 @@ import { CELL_SIZE } from "../constants";
 import { Dropable } from "../dnd";
 import { BoardContext } from "./Board";
 import { Figure } from "./Figure";
+import { FigureInfo, Nullable } from "../types";
 
 const BaseCell = styled.div`
   min-width: ${CELL_SIZE}px;
@@ -30,7 +31,7 @@ const CellBlack = styled(BaseCell)`
 interface CellProps {
   row: number;
   column: number;
-  data: any;
+  data: Nullable<FigureInfo>;
 }
 
 const LegalPoint = styled.div`

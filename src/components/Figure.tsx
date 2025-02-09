@@ -4,7 +4,7 @@ import { CELL_SIZE } from "../constants";
 import { Dragable } from "../dnd";
 import WhiteQueen from "../assets/White_Queen.png";
 import WhitePawn from "../assets/White_Pawn.png";
-import { FigureType } from "../types";
+import { FigureInfo, FigureType } from "../types";
 
 const FigureImage = styled.img`
   width: ${CELL_SIZE * 0.9}px;
@@ -14,14 +14,9 @@ const FigureImage = styled.img`
 interface FigureProps {
   row: number;
   column: number;
-  data: any;
+  data: FigureInfo;
   onDrag: () => void;
 }
-
-const IMAGE_BY_TYPE: Record<FigureType, string> = {
-  WhiteQueen: WhiteQueen,
-  WhitePawn: WhitePawn,
-};
 
 export const Figure: FC<FigureProps> = ({ row, column, data, onDrag }) => {
   const figureData = useMemo(
@@ -32,7 +27,7 @@ export const Figure: FC<FigureProps> = ({ row, column, data, onDrag }) => {
 
   return (
     <Dragable data={figureData} onDrag={onDrag}>
-      <FigureImage src={IMAGE_BY_TYPE[data?.type as unknown as FigureType]} />
+      <FigureImage src={data.image} />
     </Dragable>
   );
 };

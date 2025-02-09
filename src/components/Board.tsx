@@ -1,72 +1,24 @@
-import { createContext, FC, useCallback, useReducer } from "react";
+import { createContext, FC, useReducer } from "react";
 import styled from "styled-components";
 import { DndProvider } from "../dnd";
 import { CELL_SIZE, ROW_COUNT, COLUMN_COUNT, BOARD_SIZE } from "../constants";
-import { FigureType } from "../types";
+import { BoardData, Coords, FigureInfo } from "../types";
 import { Row } from "./Row";
 import { cloneDeep } from "lodash";
 import { useSet } from "@uidotdev/usehooks";
-
-interface FigureInfo {
-  type: FigureType;
-  legalMoves: (current: Coords, size: Coords) => string[];
-}
-
-class Queen implements FigureInfo {
-  type: FigureType = "WhiteQueen";
-
-  // Rewrite ChatGPT crap
-  legalMoves(current: Coords, boardSize: Coords): string[] {
-    const moves: string[] = [];
-
-    // Absolute Cinema
-    const { x: currentY, y: currentX } = current;
-    const { x: boardWidth, y: boardHeight } = boardSize;
-
-    function isWithinBoard(x: number, y: number): boolean {
-      return x >= 0 && x < boardWidth && y >= 0 && y < boardHeight;
-    }
-
-    function addMove(x: number, y: number): void {
-      if (isWithinBoard(x, y)) {
-        moves.push(`${x}, ${y}`);
-      }
-    }
-
-    for (let i = 0; i < boardWidth; i++) {
-      if (i !== currentX) addMove(i, currentY);
-    }
-    for (let j = 0; j < boardHeight; j++) {
-      if (j !== currentY) addMove(currentX, j);
-    }
-
-    for (let i = 1; i < Math.max(boardWidth, boardHeight); i++) {
-      addMove(currentX + i, currentY + i);
-      addMove(currentX - i, currentY + i);
-      addMove(currentX + i, currentY - i);
-      addMove(currentX - i, currentY - i);
-    }
-
-    return moves;
-  }
-}
-
-type BoardData = (FigureInfo | null)[][];
+import { Queen } from "../figures/Queen";
 
 const createField = () => {
   const board: BoardData = Array.from({ length: 8 }).map(() =>
     Array.from({ length: 8 }).map(() => null)
   );
 
-  board[7][4] = new Queen();
-
-  board[6][4] = {
-    type: "WhitePawn",
-    legalMoves: () => [],
-  };
+  board[7][4] = new Queen("White");
+  board[0][4] = new Queen("Black");
 
   return board;
 };
+
 enum BoardActions {
   set,
   delete,
@@ -74,11 +26,6 @@ enum BoardActions {
 
 interface BoardActionBase {
   type: BoardActions;
-}
-
-interface Coords {
-  x: number;
-  y: number;
 }
 
 interface SetAction extends BoardActionBase {

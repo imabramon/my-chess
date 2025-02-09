@@ -1,6 +1,6 @@
 import { createContext, FC, useReducer } from "react";
 import styled from "styled-components";
-import { DndProvider } from "../dnd";
+import { DndProvider } from "../dnd/common";
 import { CELL_SIZE, ROW_COUNT, COLUMN_COUNT, BOARD_SIZE } from "../constants";
 import { BoardData, Coords, FigureInfo } from "../types";
 import { Row } from "./Row";

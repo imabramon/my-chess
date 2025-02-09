@@ -1,10 +1,8 @@
 import { FC, useMemo } from "react";
 import styled from "styled-components";
 import { CELL_SIZE } from "../constants";
-import { Dragable } from "../dnd";
-import WhiteQueen from "../assets/White_Queen.png";
-import WhitePawn from "../assets/White_Pawn.png";
-import { FigureInfo, FigureType } from "../types";
+import { FigureInfo } from "../types";
+import { Dragable } from "../dnd/Dragable";
 
 const FigureImage = styled.img`
   width: ${CELL_SIZE * 0.9}px;
@@ -27,7 +25,7 @@ export const Figure: FC<FigureProps> = ({ row, column, data, onDrag }) => {
 
   return (
     <Dragable data={figureData} onDrag={onDrag}>
-      <FigureImage src={data.image} />
+      <FigureImage src={data.image} onClick={(e) => {}} />
     </Dragable>
   );
 };

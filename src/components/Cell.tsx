@@ -58,12 +58,12 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
 
   // @ts-ignore
   const move: BoardContext.move = boardContext.move;
-  const highlightedCells = boardContext.moveCells;
+  const movebleCells = boardContext.moveCells;
   const attackCells = boardContext.attackCells;
   const startMove = boardContext.startMove;
 
   const cordsId = `${column}, ${row}`;
-  const isLegal = !!highlightedCells?.has(cordsId);
+  const canMove = !!movebleCells?.has(cordsId);
 
   const hasFigure = !!data;
   const isUnderAttack = !!attackCells?.has(cordsId) && hasFigure;
@@ -71,13 +71,13 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
   const indicator = row + column;
   const CellComponent = getCellComponent(isUnderAttack, indicator);
 
-  const showLegalPoint = isLegal && !isUnderAttack;
+  const showLegalPoint = canMove && !isUnderAttack;
 
   return (
     <Dropable
       onDrop={(e) => {
         console.log("ON DROP", row, column, e, boardContext.board);
-        if (isLegal || isUnderAttack) {
+        if (canMove || isUnderAttack) {
           move(e.data.column, e.data.row, column, row);
         }
       }}

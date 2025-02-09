@@ -28,6 +28,11 @@ const CellBlack = styled(BaseCell)`
   color: white;
 `;
 
+const CellRed = styled(BaseCell)`
+  background-color: red;
+  color: white;
+`;
+
 interface CellProps {
   row: number;
   column: number;
@@ -42,28 +47,43 @@ const LegalPoint = styled.div`
   background-color: green;
 `;
 
+const getCellComponent = (isUnderAttack: boolean, indicator: number) => {
+  if (isUnderAttack) return CellRed;
+
+  return indicator % 2 ? CellBlack : CellWhite;
+};
+
 export const Cell: FC<CellProps> = ({ row, column, data }) => {
   const boardContext = useContext(BoardContext);
 
   // @ts-ignore
   const move: BoardContext.move = boardContext.move;
-  const highlightedCells = boardContext.highlightedCells;
+  const highlightedCells = boardContext.moveCells;
+  const attackCells = boardContext.attackCells;
   const startMove = boardContext.startMove;
 
-  const isLegal = highlightedCells?.has(`${column}, ${row}`);
+  const cordsId = `${column}, ${row}`;
+  const isLegal = !!highlightedCells?.has(cordsId);
+
+  const hasFigure = !!data;
+  const isUnderAttack = !!attackCells?.has(cordsId) && hasFigure;
 
   const indicator = row + column;
-  const CellComponent = indicator % 2 ? CellBlack : CellWhite;
+  const CellComponent = getCellComponent(isUnderAttack, indicator);
+
+  const showLegalPoint = isLegal && !isUnderAttack;
 
   return (
     <Dropable
       onDrop={(e) => {
         console.log("ON DROP", row, column, e, boardContext.board);
-        move(e.data.column, e.data.row, column, row);
+        if (isLegal || isUnderAttack) {
+          move(e.data.column, e.data.row, column, row);
+        }
       }}
     >
       <CellComponent>
-        {!!data ? (
+        {hasFigure ? (
           <Figure
             row={row}
             column={column}
@@ -73,7 +93,7 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
         ) : (
           `${row}, ${column}`
         )}
-        {!!isLegal && <LegalPoint />}
+        {showLegalPoint && <LegalPoint />}
       </CellComponent>
     </Dropable>
   );

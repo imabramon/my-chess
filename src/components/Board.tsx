@@ -75,7 +75,8 @@ const boardDelete = (x: number, y: number): DeleteAction => ({
 
 export const useBoard = () => {
   const [board, dispatch] = useReducer(boardReducer, createField());
-  const highlightedCells = useSet<string>([]);
+  const moveCells = useSet<string>([]);
+  const attackCells = useSet<string>([]);
 
   const move = (x0: number, y0: number, x1: number, y1: number) => {
     if (x0 === x1 && y0 === y1) return;
@@ -85,16 +86,29 @@ export const useBoard = () => {
 
     dispatch(boardDelete(x0, y0));
     dispatch(boardSet(x1, y1, prevData));
-    highlightedCells.clear();
+    moveCells.clear();
+    attackCells.clear();
+  };
+
+  const hightlightCells = (x: number, y: number, data: FigureInfo) => {
+    const legal = data.legalMoves({ x, y }, BOARD_SIZE);
+    const thisCellId = `${x}, ${y}`;
+
+    moveCells.clear();
+    legal.forEach((cell) => {
+      moveCells.add(cell);
+      attackCells.add(cell);
+    });
+
+    moveCells.delete(thisCellId);
+    attackCells.delete(thisCellId);
   };
 
   const startMove = (x: number, y: number, data: FigureInfo) => {
-    const legal = data.legalMoves({ x, y }, BOARD_SIZE);
-    highlightedCells.clear();
-    legal.forEach(highlightedCells.add);
+    hightlightCells(x, y, data);
   };
 
-  return { board, move, startMove, highlightedCells };
+  return { board, move, startMove, moveCells, attackCells };
 };
 
 export type BoardContext = ReturnType<typeof useBoard>;

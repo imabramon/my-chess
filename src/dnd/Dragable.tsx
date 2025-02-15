@@ -1,7 +1,14 @@
 import { isEqual } from "lodash";
-import { ReactElement, FC, useRef, useLayoutEffect } from "react";
+import {
+  ReactElement,
+  FC,
+  useRef,
+  useLayoutEffect,
+  MouseEventHandler,
+} from "react";
 import styled from "styled-components";
-import { useDrag } from "./common";
+import { cordsFromMouse, isMouseMove, useDrag } from "./common";
+import { Coords } from "../types";
 
 const BaseDragable = styled.div`
   width: fit-content;
@@ -14,10 +21,21 @@ interface DragableProps {
   onDrag?: () => void;
 }
 
-export const Dragable: FC<DragableProps> = ({ children, data, onDrag }) => {
+export const Dragable: FC<DragableProps> = ({
+  children,
+  data,
+  onDrag: propsOnDrag,
+}) => {
   const ref = useRef<HTMLDivElement>(null);
   const isDraging = useRef(false);
+  const mouseCoords = useRef<Coords | null>(null);
+  const isBeginDragCalled = useRef(false);
   const { setData, data: currentData, drop, setX, setY } = useDrag();
+
+  const onDrag = () => {
+    console.log("calll", "onDrag");
+    propsOnDrag?.();
+  };
 
   useLayoutEffect(() => {
     if (!ref.current) return;
@@ -27,8 +45,18 @@ export const Dragable: FC<DragableProps> = ({ children, data, onDrag }) => {
       const element = ref.current;
       if (!element) return;
 
-      const isDrag = isDraging.current;
+      const current = cordsFromMouse(e);
+      const prev = mouseCoords.current;
+
+      const isDrag =
+        isDraging.current && (prev ? isMouseMove(prev, current) : true);
+
       if (isDrag) {
+        console.log("calll on move", current, prev);
+        if (!isBeginDragCalled.current) {
+          onDrag?.();
+          isBeginDragCalled.current = true;
+        }
         // console.log("calll", "isDraging");
         element.style.position = "fixed";
         element.style.top = `${e.clientY}px`;
@@ -49,22 +77,25 @@ export const Dragable: FC<DragableProps> = ({ children, data, onDrag }) => {
     };
   }, [ref]);
 
+  const onMouseDown: MouseEventHandler = (e) => {
+    e.preventDefault();
+    // onDrag?.();
+    if (!isEqual(currentData, data)) setData(data);
+    isDraging.current = true;
+    mouseCoords.current = cordsFromMouse(e);
+    isBeginDragCalled.current = false;
+    console.log("calll", "down", mouseCoords.current);
+  };
+
+  const onMouseUp: MouseEventHandler = () => {
+    isDraging.current = false;
+    drop();
+    setData(undefined);
+    mouseCoords.current = null;
+  };
+
   return (
-    <BaseDragable
-      ref={ref}
-      onMouseDown={(e) => {
-        console.log("calll", "down");
-        e.preventDefault();
-        onDrag?.();
-        if (!isEqual(currentData, data)) setData(data);
-        isDraging.current = true;
-      }}
-      onMouseUp={() => {
-        isDraging.current = false;
-        drop();
-        setData(undefined);
-      }}
-    >
+    <BaseDragable ref={ref} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
       {children}
     </BaseDragable>
   );

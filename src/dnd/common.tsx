@@ -6,7 +6,9 @@ import {
   useRef,
   useContext,
   useCallback,
+  MouseEvent as ReactMouseEvent,
 } from "react";
+import { Coords } from "../types";
 
 interface DND {
   x?: number;
@@ -72,4 +74,22 @@ export const useDrag = () => {
   }, []);
 
   return { setX, setY, setData, data: data.data, drop, addListener };
+};
+
+const DRAG_DELTA = 3;
+
+export const isMouseMove = (prev: Coords, current: Coords): boolean => {
+  const xDelta = Math.abs(current.x - prev.x);
+  const yDelta = Math.abs(current.y - prev.y);
+
+  console.log("calll isMouseMouse", xDelta, yDelta);
+
+  return xDelta > DRAG_DELTA || yDelta > DRAG_DELTA;
+};
+
+export const cordsFromMouse = (e: MouseEvent | ReactMouseEvent): Coords => {
+  return {
+    x: e.clientX,
+    y: e.clientY,
+  };
 };

@@ -19,13 +19,12 @@ interface DragableProps {
   children: ReactElement;
   data: any;
   onDrag?: () => void;
+  onClick?: MouseEventHandler;
 }
 
-export const Dragable: FC<DragableProps> = ({
-  children,
-  data,
-  onDrag: propsOnDrag,
-}) => {
+export const Dragable: FC<DragableProps> = (props) => {
+  const { children, data, onDrag: propsOnDrag, onClick } = props;
+
   const ref = useRef<HTMLDivElement>(null);
   const isDraging = useRef(false);
   const mouseCoords = useRef<Coords | null>(null);
@@ -95,7 +94,12 @@ export const Dragable: FC<DragableProps> = ({
   };
 
   return (
-    <BaseDragable ref={ref} onMouseDown={onMouseDown} onMouseUp={onMouseUp}>
+    <BaseDragable
+      ref={ref}
+      onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
+      onClick={onClick}
+    >
       {children}
     </BaseDragable>
   );

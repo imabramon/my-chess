@@ -15,7 +15,7 @@ export class Queen implements FigureInfo {
     const moves: string[] = [];
 
     // Absolute Cinema
-    const { x: currentY, y: currentX } = current;
+    const { x: currentX, y: currentY } = current;
     const { x: boardWidth, y: boardHeight } = boardSize;
 
     function isWithinBoard(x: number, y: number): boolean {

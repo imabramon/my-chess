@@ -1,10 +1,11 @@
-import { ReactElement, FC, useRef, useEffect } from "react";
+import { ReactElement, FC, useRef, useEffect, MouseEventHandler } from "react";
 import styled from "styled-components";
 import { useDrag } from "./common";
 
 interface DropableProps {
   children: ReactElement;
   onDrop?: (data: any) => void;
+  onClick?: MouseEventHandler;
 }
 
 const BaseDropable = styled.div`
@@ -12,7 +13,7 @@ const BaseDropable = styled.div`
   height: fit-content;
 `;
 
-export const Dropable: FC<DropableProps> = ({ children, onDrop }) => {
+export const Dropable: FC<DropableProps> = ({ children, onDrop, onClick }) => {
   const { addListener } = useDrag();
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,5 +35,9 @@ export const Dropable: FC<DropableProps> = ({ children, onDrop }) => {
     });
     return unsubscribe;
   }, [onDrop]);
-  return <BaseDropable ref={ref}>{children}</BaseDropable>;
+  return (
+    <BaseDropable ref={ref} onClick={onClick}>
+      {children}
+    </BaseDropable>
+  );
 };

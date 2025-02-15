@@ -1,4 +1,4 @@
-import { FC, useMemo } from "react";
+import { FC, MouseEventHandler, useMemo } from "react";
 import styled from "styled-components";
 import { CELL_SIZE } from "../constants";
 import { FigureInfo } from "../types";
@@ -13,10 +13,17 @@ interface FigureProps {
   row: number;
   column: number;
   data: FigureInfo;
-  onDrag: () => void;
+  onDrag?: () => void;
+  onClick?: MouseEventHandler;
 }
 
-export const Figure: FC<FigureProps> = ({ row, column, data, onDrag }) => {
+export const Figure: FC<FigureProps> = ({
+  row,
+  column,
+  data,
+  onDrag,
+  onClick,
+}) => {
   const figureData = useMemo(
     () => ({ row, column, figureData: data }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -24,8 +31,8 @@ export const Figure: FC<FigureProps> = ({ row, column, data, onDrag }) => {
   );
 
   return (
-    <Dragable data={figureData} onDrag={onDrag}>
-      <FigureImage src={data.image} onClick={(e) => {}} />
+    <Dragable data={figureData} onDrag={onDrag} onClick={onClick}>
+      <FigureImage src={data.image} />
     </Dragable>
   );
 };

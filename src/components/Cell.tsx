@@ -61,6 +61,7 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
   const movebleCells = boardContext.moveCells;
   const attackCells = boardContext.attackCells;
   const startMove = boardContext.startMove;
+  const moveTo = boardContext.moveTo;
 
   const cordsId = `${column}, ${row}`;
   const canMove = !!movebleCells?.has(cordsId);
@@ -71,15 +72,19 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
   const indicator = row + column;
   const CellComponent = getCellComponent(isUnderAttack, indicator);
 
-  const showLegalPoint = canMove && !isUnderAttack;
+  const showMovePoint = canMove && !isUnderAttack;
+  const isLegalMove = canMove || isUnderAttack;
 
   return (
     <Dropable
       onDrop={(e) => {
         console.log("ON DROP", row, column, e, boardContext.board);
-        if (canMove || isUnderAttack) {
-          move(e.data.column, e.data.row, column, row);
+        if (isLegalMove) {
+          moveTo?.(column, row);
         }
+      }}
+      onClick={() => {
+        moveTo?.(column, row);
       }}
     >
       <CellComponent>
@@ -88,12 +93,13 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
             row={row}
             column={column}
             data={data}
-            onDrag={() => startMove?.(row, column, data)}
+            onClick={() => startMove?.(column, row, data)}
+            onDrag={() => startMove?.(column, row, data)}
           />
         ) : (
           `${row}, ${column}`
         )}
-        {showLegalPoint && <LegalPoint />}
+        {showMovePoint && <LegalPoint />}
       </CellComponent>
     </Dropable>
   );

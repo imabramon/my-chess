@@ -1,4 +1,4 @@
-import { createContext, FC, useReducer } from "react";
+import { createContext, FC, useReducer, useRef } from "react";
 import styled from "styled-components";
 import { DndProvider } from "../dnd/common";
 import { CELL_SIZE, ROW_COUNT, COLUMN_COUNT, BOARD_SIZE } from "../constants";
@@ -77,17 +77,25 @@ export const useBoard = () => {
   const [board, dispatch] = useReducer(boardReducer, createField());
   const moveCells = useSet<string>([]);
   const attackCells = useSet<string>([]);
+  const currentFigurePosition = useRef<Coords | null>();
 
   const move = (x0: number, y0: number, x1: number, y1: number) => {
     if (x0 === x1 && y0 === y1) return;
     const prevData = board[y0]?.[x0];
-    console.log("calll", prevData);
+    console.log("calll", prevData, x0, y0);
     if (!prevData) return;
 
     dispatch(boardDelete(x0, y0));
     dispatch(boardSet(x1, y1, prevData));
     moveCells.clear();
     attackCells.clear();
+  };
+
+  const moveTo = (x: number, y: number) => {
+    console.log("calll moveTo", currentFigurePosition.current, x, y);
+    const position = currentFigurePosition.current;
+    if (!position) return null;
+    move(position.x, position.y, x, y);
   };
 
   const hightlightCells = (x: number, y: number, data: FigureInfo) => {
@@ -104,11 +112,17 @@ export const useBoard = () => {
     attackCells.delete(thisCellId);
   };
 
-  const startMove = (x: number, y: number, data: FigureInfo) => {
-    hightlightCells(x, y, data);
+  const pickFigure = (x: number, y: number) => {
+    console.log("calll pick", x, y);
+    currentFigurePosition.current = { x, y };
   };
 
-  return { board, move, startMove, moveCells, attackCells };
+  const startMove = (x: number, y: number, data: FigureInfo) => {
+    hightlightCells(x, y, data);
+    pickFigure(x, y);
+  };
+
+  return { board, move, startMove, moveCells, attackCells, moveTo };
 };
 
 export type BoardContext = ReturnType<typeof useBoard>;

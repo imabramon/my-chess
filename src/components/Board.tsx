@@ -7,16 +7,58 @@ import { Row } from "./Row";
 import { cloneDeep } from "lodash";
 import { useSet } from "@uidotdev/usehooks";
 import { Queen } from "../figures/Queen";
+import { Pawn } from "../figures/Pawn";
+import { Rook } from "../figures/Rook";
+import { King } from "../figures/King";
+import { Knight } from "../figures/Knight";
+import { Bishop } from "../figures/Bishop";
 
-const createField = () => {
+const createField = (fen?: string): BoardData => {
   const board: BoardData = Array.from({ length: 8 }).map(() =>
     Array.from({ length: 8 }).map(() => null)
   );
 
-  board[7][4] = new Queen("White");
-  board[0][4] = new Queen("Black");
+  if (fen) {
+    const fenParts = fen.split(" ");
+    const fenBoard = fenParts[0]; // Берем только часть FEN, описывающую доску
+
+    let row = 0;
+    let col = 0;
+
+    for (const char of fenBoard) {
+      if (char === "/") {
+        row++;
+        col = 0;
+      } else if (/\d/.test(char)) {
+        col += parseInt(char, 10);
+      } else {
+        board[row][col] = resolveFigureByFENChar(char);
+        col++;
+      }
+    }
+  }
 
   return board;
+};
+
+const resolveFigureByFENChar = (char: string): FigureInfo => {
+  const color = char === char.toUpperCase() ? "White" : "Black";
+  switch (char.toLocaleUpperCase()) {
+    case "P":
+      return new Pawn(color);
+    case "R":
+      return new Rook(color);
+    case "N":
+      return new Knight(color);
+    case "B":
+      return new Bishop(color);
+    case "Q":
+      return new Queen(color);
+    case "K":
+      return new King(color);
+    default:
+      throw new Error(`Unknown figure type: ${char}`);
+  }
 };
 
 enum BoardActions {
@@ -74,7 +116,10 @@ const boardDelete = (x: number, y: number): DeleteAction => ({
 });
 
 export const useBoard = () => {
-  const [board, dispatch] = useReducer(boardReducer, createField());
+  const [board, dispatch] = useReducer(
+    boardReducer,
+    createField("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+  );
   const moveCells = useSet<string>([]);
   const attackCells = useSet<string>([]);
   const currentFigurePosition = useRef<Coords | null>();

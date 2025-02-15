@@ -19,7 +19,13 @@ export interface FigureInfo {
   get image(): string;
 }
 
-export type FigureType = "Queen";
+export type FigureType =
+  | "Queen"
+  | "Pawn"
+  | "Rook"
+  | "Bishop"
+  | "Knight"
+  | "King";
 export type FigureColor = "White" | "Black";
 
 // board

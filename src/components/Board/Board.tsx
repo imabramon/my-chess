@@ -1,17 +1,22 @@
 import { createContext, FC, useReducer, useRef } from "react";
 import styled from "styled-components";
-import { DndProvider } from "../dnd/common";
-import { CELL_SIZE, ROW_COUNT, COLUMN_COUNT, BOARD_SIZE } from "../constants";
-import { BoardData, Coords, FigureInfo } from "../types";
-import { Row } from "./Row";
+import { DndProvider } from "../../dnd/common";
+import {
+  CELL_SIZE,
+  ROW_COUNT,
+  COLUMN_COUNT,
+  BOARD_SIZE,
+} from "../../constants";
+import { BoardData, Coords, FigureInfo } from "../../types";
+import { Row } from "../Row";
 import { cloneDeep } from "lodash";
 import { useSet } from "@uidotdev/usehooks";
-import { Queen } from "../figures/Queen";
-import { Pawn } from "../figures/Pawn";
-import { Rook } from "../figures/Rook";
-import { King } from "../figures/King";
-import { Knight } from "../figures/Knight";
-import { Bishop } from "../figures/Bishop";
+import { Queen } from "../../figures/Queen";
+import { Pawn } from "../../figures/Pawn";
+import { Rook } from "../../figures/Rook";
+import { King } from "../../figures/King";
+import { Knight } from "../../figures/Knight";
+import { Bishop } from "../../figures/Bishop";
 
 const createField = (fen?: string): BoardData => {
   const board: BoardData = Array.from({ length: 8 }).map(() =>
@@ -115,10 +120,10 @@ const boardDelete = (x: number, y: number): DeleteAction => ({
   position: { x, y },
 });
 
-export const useBoard = () => {
+export const useBoard = (fen?: string) => {
   const [board, dispatch] = useReducer(
     boardReducer,
-    createField("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
+    createField(fen ?? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
   );
   const moveCells = useSet<string>([]);
   const attackCells = useSet<string>([]);
@@ -181,8 +186,13 @@ const Field = styled.div`
   height: ${CELL_SIZE * COLUMN_COUNT}px;
 `;
 
-export const Board: FC = () => {
-  const boardContext = useBoard();
+export interface BoardProps {
+  fen?: string;
+}
+
+export const Board: FC<BoardProps> = (props) => {
+  const { fen } = props;
+  const boardContext = useBoard(fen);
   const { board } = boardContext;
   console.log("render", board);
   return (

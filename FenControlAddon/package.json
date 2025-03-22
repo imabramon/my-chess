@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "A fen string control",
   "keywords": [
-    "storybook-addons", "storybook-addons"
+    "storybook-addons",
+    "storybook-addons"
   ],
   "repository": {
     "type": "git",
@@ -12,21 +13,6 @@
   "type": "module",
   "license": "MIT",
   "author": "imabramon",
-  "exports": {
-    ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
-    },
-    "./preview": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/preview.js",
-      "require": "./dist/preview.cjs"
-    },
-    "./preset": "./dist/preset.cjs",
-    "./manager": "./dist/manager.js",
-    "./package.json": "./package.json"
-  },
   "files": [
     "dist/**/*",
     "README.md",
@@ -34,15 +20,7 @@
     "*.d.ts"
   ],
   "scripts": {
-    "build": "tsup",
-    "build:watch": "npm run build -- --watch",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "run-p build:watch \"storybook --quiet\"",
-    "prerelease": "zx scripts/prepublish-checks.js",
-    "release": "npm run build && auto shipit",
-    "eject-ts": "zx scripts/eject-typescript.js",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build": "tsup"
   },
   "dependencies": {
     "@storybook/icons": "^1.2.10"
@@ -70,8 +48,7 @@
     "storybook": "0.0.0-pr-26654-sha-49d01553",
     "tsup": "^8.2.4",
     "typescript": "^5.5.4",
-    "vite": "^5.3.5",
-    "zx": "^7.2.3"
+    "vite": "^5.3.5"
   },
   "peerDependencies": {
     "storybook": "^8.3.0 || 0.0.0-pr-26654-sha-49d01553"
@@ -83,23 +60,22 @@
     "access": "public"
   },
   "bundler": {
-    "exportEntries": [
-      "src/index.ts"
-    ],
     "managerEntries": [
       "src/manager.tsx"
-    ],
-    "previewEntries": [
-      "src/preview.ts"
-    ],
-    "nodeEntries": [
-      "src/preset.ts"
     ]
   },
   "storybook": {
     "displayName": "FenControl",
     "supportedFrameworks": [
-      "react", "vue", "angular", "web-components", "ember", "html", "svelte", "preact", "react-native"
+      "react",
+      "vue",
+      "angular",
+      "web-components",
+      "ember",
+      "html",
+      "svelte",
+      "preact",
+      "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/321738/63501763-88dbf600-c4cc-11e9-96cd-94adadc2fd72.png"
   }

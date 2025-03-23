@@ -1,0 +1,5 @@
+{
+  "watch": ["./FenControlAddon/dist"],
+  "ext": "tsx,ts,jsx,js,md",
+  "exec": "npm run storybook:quiet"
+}

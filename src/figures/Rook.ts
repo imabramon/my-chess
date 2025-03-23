@@ -1,20 +1,11 @@
 import WhiteRook from "../assets/White_Rook.png";
 import BlackRook from "../assets/Black_Rook.png";
-import {
-  Coords,
-  FigureColor,
-  FigureInfo,
-  FigureType,
-  GetMoves,
-} from "../types";
+import { Coords, FigureType, GetMoves } from "../types";
+import { BaseFigure } from "./Base";
 
-export class Rook implements FigureInfo {
+export class Rook extends BaseFigure {
   type: FigureType = "Rook";
-  color: FigureColor = "White";
-
-  constructor(color: FigureColor = "White") {
-    this.color = color;
-  }
+  _fen = "R";
 
   legalMoves: GetMoves = (current: Coords, size: Coords): string[] => {
     const moves: string[] = [];

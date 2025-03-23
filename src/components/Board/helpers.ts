@@ -53,3 +53,34 @@ export const resolveFigureByFENChar = (char: string): FigureInfo => {
       throw new Error(`Unknown figure type: ${char}`);
   }
 };
+
+export const resolveCharByColor = (char: string, color: "White" | "Black") => {
+  if (color === "White") return char.toUpperCase();
+  return char.toLowerCase();
+};
+
+export const getFenString = (board: BoardData) => {
+  const fenParts: string[] = [];
+
+  board.forEach((row) => {
+    const rowParts: string[] = [];
+    let emptyCount = 0;
+    row.forEach((cell) => {
+      if (!cell) {
+        emptyCount++;
+        return;
+      }
+
+      if (emptyCount) {
+        rowParts.push(emptyCount.toString());
+        emptyCount = 0;
+      }
+      rowParts.push(cell.fen);
+    });
+    if (emptyCount) rowParts.push(emptyCount.toString());
+
+    fenParts.push(rowParts.join(""));
+  });
+
+  return fenParts.join("/");
+};

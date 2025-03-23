@@ -1,9 +1,9 @@
 import { useSet } from "@uidotdev/usehooks";
 import { cloneDeep } from "lodash";
-import { useReducer, useRef } from "react";
+import { useMemo, useReducer, useRef } from "react";
 import { BOARD_SIZE } from "../../constants";
 import { Coords, FigureInfo, BoardData } from "../../types";
-import { createField } from "./helpers";
+import { createField, getFenString } from "./helpers";
 
 enum BoardActions {
   set,
@@ -27,7 +27,7 @@ interface DeleteAction extends BoardActionBase {
 
 type BoardAction = SetAction | DeleteAction;
 
-const boardReducer = (board: BoardData, action: BoardAction) => {
+const boardReducer = (board: BoardData, action: BoardAction): BoardData => {
   switch (action.type) {
     case BoardActions.set: {
       const newBoard = cloneDeep(board);
@@ -64,6 +64,9 @@ export const useBoard = (fen?: string) => {
     boardReducer,
     createField(fen ?? "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR")
   );
+
+  const fenString = useMemo(() => getFenString(board), [board]);
+
   const moveCells = useSet<string>([]);
   const attackCells = useSet<string>([]);
   const currentFigurePosition = useRef<Coords | null>();
@@ -111,5 +114,5 @@ export const useBoard = (fen?: string) => {
     pickFigure(x, y);
   };
 
-  return { board, move, startMove, moveCells, attackCells, moveTo };
+  return { board, fenString, move, startMove, moveCells, attackCells, moveTo };
 };

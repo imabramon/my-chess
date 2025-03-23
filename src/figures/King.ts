@@ -1,20 +1,11 @@
-import {
-  FigureInfo,
-  FigureType,
-  FigureColor,
-  GetMoves,
-  Coords,
-} from "../types";
+import { FigureType, GetMoves, Coords } from "../types";
 import WhiteKing from "../assets/White_King.png";
 import BlackKing from "../assets/Black_King.png";
+import { BaseFigure } from "./Base";
 
-export class King implements FigureInfo {
+export class King extends BaseFigure {
   type: FigureType = "King";
-  color: FigureColor = "White";
-
-  constructor(color: FigureColor = "White") {
-    this.color = color;
-  }
+  _fen = "K";
 
   legalMoves: GetMoves = (current: Coords, size: Coords): string[] => {
     const moves: string[] = [];

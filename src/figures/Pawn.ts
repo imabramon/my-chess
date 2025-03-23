@@ -1,20 +1,11 @@
 import WhitePawn from "../assets/White_Pawn.png";
 import BlackPawn from "../assets/Black_Pawn.png";
-import {
-  FigureInfo,
-  FigureType,
-  FigureColor,
-  GetMoves,
-  Coords,
-} from "../types";
+import { FigureType, GetMoves, Coords } from "../types";
+import { BaseFigure } from "./Base";
 
-export class Pawn implements FigureInfo {
+export class Pawn extends BaseFigure {
   type: FigureType = "Pawn";
-  color: FigureColor = "White";
-
-  constructor(color: FigureColor = "White") {
-    this.color = color;
-  }
+  _fen = "P";
 
   legalMoves: GetMoves = (current: Coords, size: Coords): string[] => {
     const moves: string[] = [];

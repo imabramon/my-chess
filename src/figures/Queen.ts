@@ -1,14 +1,11 @@
-import { FigureInfo, FigureType, FigureColor, Coords } from "../types";
+import { FigureType, Coords } from "../types";
 import WhiteQueen from "../assets/White_Queen.png";
 import BlackQueen from "../assets/Black_Queen.png";
+import { BaseFigure } from "./Base";
 
-export class Queen implements FigureInfo {
+export class Queen extends BaseFigure {
   type: FigureType = "Queen";
-  color: FigureColor = "White";
-
-  constructor(color: FigureColor) {
-    this.color = color;
-  }
+  _fen = "Q";
 
   // Rewrite ChatGPT crap
   private _legalMoves(current: Coords, boardSize: Coords): string[] {
@@ -45,13 +42,13 @@ export class Queen implements FigureInfo {
     return moves;
   }
 
-  legalMoves(current: Coords, size: Coords) {
+  legalMoves = (current: Coords, size: Coords) => {
     return this._legalMoves(current, size);
-  }
+  };
 
-  legalAttacks(current: Coords, size: Coords) {
+  legalAttacks = (current: Coords, size: Coords) => {
     return this._legalMoves(current, size);
-  }
+  };
 
   get image() {
     if (this.color === "White") return WhiteQueen;

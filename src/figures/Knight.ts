@@ -1,20 +1,11 @@
 import WhiteKnight from "../assets/White_Knight.png";
 import BlackKnight from "../assets/Black_Knight.png";
-import {
-  FigureInfo,
-  FigureType,
-  FigureColor,
-  GetMoves,
-  Coords,
-} from "../types";
+import { FigureType, GetMoves, Coords } from "../types";
+import { BaseFigure } from "./Base";
 
-export class Knight implements FigureInfo {
+export class Knight extends BaseFigure {
   type: FigureType = "Knight";
-  color: FigureColor = "White";
-
-  constructor(color: FigureColor = "White") {
-    this.color = color;
-  }
+  _fen = "N";
 
   legalMoves: GetMoves = (current: Coords, size: Coords): string[] => {
     const moves: string[] = [];

@@ -1,4 +1,4 @@
-import { createContext, FC } from "react";
+import { createContext, FC, useEffect } from "react";
 import styled from "styled-components";
 import { DndProvider } from "../../dnd/common";
 import { CELL_SIZE, ROW_COUNT, COLUMN_COUNT } from "../../constants";
@@ -18,12 +18,19 @@ const Field = styled.div`
 
 export interface BoardProps {
   fen?: string;
+  setCurrentFen?: (fen: string) => void;
 }
 
 export const Board: FC<BoardProps> = (props) => {
-  const { fen } = props;
+  const { fen, setCurrentFen } = props;
   const boardContext = useBoard(fen);
-  const { board } = boardContext;
+  const { board, fenString } = boardContext;
+
+  useEffect(() => {
+    console.log("current", fenString, setCurrentFen);
+    setCurrentFen?.(fenString);
+  }, [fenString, setCurrentFen]);
+
   console.log("render", board);
   return (
     <BoardContext.Provider value={boardContext}>

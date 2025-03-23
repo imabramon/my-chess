@@ -1,7 +1,7 @@
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { AddonPanel } from "storybook/internal/components";
 import { FenItem } from "./FenItem";
-import { useArgs } from "storybook/internal/manager-api";
+import { useArgs, useChannel } from "storybook/internal/manager-api";
 import { defer } from "lodash";
 
 interface PanelProps {
@@ -38,9 +38,20 @@ function forceRerender() {
 
 export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   const [args, updateArgs] = useArgs();
+  const [currentFen, setCurrentFen] = useState("");
+
+  useChannel({
+    FEN_CHANGING: ({ currentFen }: { currentFen: string }) => {
+      setCurrentFen(currentFen);
+    },
+  });
   return (
     <AddonPanel {...props}>
       <h1>Fen control</h1>
+      <div>
+        <input value={currentFen} />
+        <button>Сохранить</button>
+      </div>
       <ul>
         {DEFAULT_DATA.map((fenData) => (
           <FenItem

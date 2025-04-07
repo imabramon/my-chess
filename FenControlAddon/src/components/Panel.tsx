@@ -4,7 +4,7 @@ import { FenItem } from "./FenItem";
 import { useArgs, useChannel } from "storybook/internal/manager-api";
 import { defer } from "lodash";
 import { useLocalStorage } from "@uidotdev/usehooks";
-import { useCustomState, useUnmount } from "./hooks";
+import { useCustomState, useUnmount } from "../hooks/common";
 import { inputGetter } from "./helpers";
 import { useList } from "src/hooks/useList";
 

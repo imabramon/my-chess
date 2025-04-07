@@ -1,11 +1,12 @@
-import React, { memo, useEffect, useMemo, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { AddonPanel } from "storybook/internal/components";
 import { FenItem } from "./FenItem";
 import { useArgs, useChannel } from "storybook/internal/manager-api";
 import { defer } from "lodash";
-import { useList } from "@uidotdev/usehooks";
-import { useCustomState } from "./hooks";
+import { useLocalStorage } from "@uidotdev/usehooks";
+import { useCustomState, useUnmount } from "./hooks";
 import { inputGetter } from "./helpers";
+import { useList } from "src/hooks/useList";
 
 interface PanelProps {
   active: boolean;
@@ -42,12 +43,30 @@ function forceRerender() {
   });
 }
 
+const useSave = <T extends (...args: any[]) => any>(
+  origin: T,
+  save: (T: ReturnType<T>) => void,
+): T =>
+  useCallback(
+    ((...args: Parameters<T>): ReturnType<T> => {
+      const result = origin(...args);
+      save(result);
+      return result;
+    }) as T,
+    [origin, save],
+  );
+
 const getNewName = (len: number) => `Untitled(${len})`;
 
 export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   const [, updateArgs] = useArgs();
 
-  const [items, { updateAt, removeAt, push }] = useList(DEFAULT_DATA);
+  const [savedItems, saveItems] = useLocalStorage<FenEntity[]>(
+    "fen-addon",
+    DEFAULT_DATA,
+  );
+
+  const [items, rawActions] = useList(savedItems);
 
   const names = useMemo(
     () => new Set([...items.map(({ name }) => name)]),
@@ -70,6 +89,16 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
       setCurrentFen(currentFen);
     },
   });
+
+  useUnmount(() => {
+    saveItems(items);
+  });
+
+  const save = useCallback((items: FenEntity[]) => saveItems(items), []);
+
+  const push = useSave(rawActions.push, save);
+  const updateAt = useSave(rawActions.updateAt, save);
+  const removeAt = useSave(rawActions.removeAt, save);
 
   return (
     <AddonPanel {...props}>

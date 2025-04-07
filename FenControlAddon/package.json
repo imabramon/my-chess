@@ -24,7 +24,8 @@
     "build:watch": "tsup --watch"
   },
   "dependencies": {
-    "@storybook/icons": "^1.2.10"
+    "@storybook/icons": "^1.2.10",
+    "@uidotdev/usehooks": "^2.4.1"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "0.0.0-pr-26654-sha-49d01553",

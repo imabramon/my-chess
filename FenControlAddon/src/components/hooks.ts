@@ -1,4 +1,11 @@
-import { useState, useCallback, useMemo } from "react";
+import {
+  useState,
+  useCallback,
+  useMemo,
+  useLayoutEffect,
+  useRef,
+  useEffect,
+} from "react";
 
 export const useCustomState = <T, R>(
   init: T,
@@ -28,4 +35,25 @@ export const useSync = <T>(
   }, [global, isSynced]);
 
   return [isSynced, sync];
+};
+
+export function useEvent<T extends (...args: never[]) => unknown>(func: T): T {
+  const refCallee = useRef(func);
+
+  //TODO Rewrite to useInsertionEffect after update to React 18
+  useLayoutEffect(() => {
+    refCallee.current = func;
+  });
+
+  return useCallback((...args: never[]) => refCallee.current(...args), []) as T;
+}
+
+export const useUnmount = <T extends (...args: never[]) => void>(
+  func: T,
+): void => {
+  const onUnmount = useEvent(func);
+
+  useEffect(() => {
+    return onUnmount;
+  }, []);
 };

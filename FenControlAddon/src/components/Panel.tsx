@@ -2,7 +2,7 @@ import React, { memo, useCallback, useEffect, useMemo } from "react";
 import { AddonPanel } from "storybook/internal/components";
 import { FenItem } from "./FenItem";
 import { useArgs, useChannel } from "storybook/internal/manager-api";
-import { defer } from "lodash";
+import { defer, uniqueId } from "lodash";
 import { useLocalStorage } from "@uidotdev/usehooks";
 import { useCustomState, useUnmount } from "../hooks/common";
 import { inputGetter } from "./helpers";
@@ -13,18 +13,23 @@ interface PanelProps {
 }
 
 interface FenEntity {
+  id: string;
   name: string;
   fen: string;
   isEditable?: boolean;
 }
 
+const newFenId = () => uniqueId("fen_");
+
 const DEFAULT_DATA: FenEntity[] = [
   {
+    id: newFenId(),
     name: "Base",
     fen: "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1",
     isEditable: false,
   },
   {
+    id: newFenId(),
     name: "Some test 2",
     fen: "8/8/8/4p1K1/2k1P3/8/8/8 b - - 0 1",
     isEditable: false,
@@ -109,6 +114,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
         <button
           onClick={() => {
             push({
+              id: newFenId(),
               name,
               fen: currentFen,
             });
@@ -122,7 +128,7 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
       <ul>
         {items.map((fenData, index) => (
           <FenItem
-            key={index}
+            key={fenData.id}
             {...fenData}
             curentFen={currentFen}
             onApply={() => {

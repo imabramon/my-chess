@@ -1,6 +1,6 @@
 import React, { FC, useCallback } from "react";
 import { inputGetter } from "./helpers";
-import { useCustomState, useSync, useUnmount } from "./hooks";
+import { useCustomState, useSync, useUnmount } from "../hooks/common";
 
 interface FenItemProps {
   name: string;

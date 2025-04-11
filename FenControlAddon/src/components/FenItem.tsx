@@ -10,10 +10,20 @@ interface FenItemProps {
   onApply: () => void;
   onDelete: () => void;
   onSave: (name: string, fen: string) => void;
+  canSave: (name: string, fen: string) => boolean;
 }
 
 export const FenItem: FC<FenItemProps> = (props) => {
-  const { name, fen, isEditable, onApply, onDelete, onSave, curentFen } = props;
+  const {
+    name,
+    fen,
+    isEditable,
+    onApply,
+    onDelete,
+    onSave,
+    curentFen,
+    canSave,
+  } = props;
 
   const [_name, changeName, setName] = useCustomState(name, inputGetter);
   const [isNameSynced, syncName] = useSync(_name, name, setName);
@@ -61,7 +71,9 @@ export const FenItem: FC<FenItemProps> = (props) => {
         </>
       ) : (
         <>
-          <button onClick={_onSave}>Сохранить</button>
+          <button onClick={_onSave} disabled={!canSave(_name, _fen)}>
+            Сохранить
+          </button>
           <button onClick={sync}>Отменить</button>
         </>
       )}

@@ -149,6 +149,9 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
                 fen,
               });
             }}
+            canSave={(name) => {
+              return !names.has(name);
+            }}
           />
         ))}
       </ul>

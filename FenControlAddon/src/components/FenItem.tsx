@@ -36,7 +36,6 @@ export const FenItem: FC<FenItemProps> = (props) => {
 
   const _onSave = useCallback(() => {
     onSave(_name, _fen);
-    sync();
   }, [_name, _fen]);
 
   const loadCurrent = () => {

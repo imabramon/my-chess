@@ -1,5 +1,10 @@
 import React, { memo, useCallback, useEffect, useMemo } from "react";
-import { AddonPanel } from "storybook/internal/components";
+import {
+  AddonPanel,
+  Form,
+  H1,
+  IconButton,
+} from "storybook/internal/components";
 import { FenItem } from "./FenItem";
 import { useArgs, useChannel } from "storybook/internal/manager-api";
 import { defer, uniqueId } from "lodash";
@@ -7,6 +12,8 @@ import { useLocalStorage } from "@uidotdev/usehooks";
 import { useCustomState, useUnmount } from "../hooks/common";
 import { inputGetter } from "./helpers";
 import { useList } from "src/hooks/useList";
+import Icons from "@storybook/icons";
+import styled from "styled-components";
 
 interface PanelProps {
   active: boolean;
@@ -63,6 +70,27 @@ const useSave = <T extends (...args: any[]) => any>(
 
 const getNewName = (len: number) => `Untitled(${len})`;
 
+const Container = styled.div`
+  padding: 8px;
+  width: 100%;
+  height: 100%;
+`;
+
+const List = styled.ul`
+  padding-left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const Header = styled.div`
+  display: flex;
+  list-style: none;
+  box-sizing: border-box;
+  flex-direction: row;
+  gap: 8px;
+`;
+
 export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
   const [, updateArgs] = useArgs();
 
@@ -107,54 +135,69 @@ export const Panel: React.FC<PanelProps> = memo(function MyPanel(props) {
 
   return (
     <AddonPanel {...props}>
-      <h1>Fen control</h1>
-      <div>
-        <input value={name} onChange={changeName} />
-        <input value={currentFen} onChange={changeFen} />
-        <button
-          onClick={() => {
-            push({
-              id: newFenId(),
-              name,
-              fen: currentFen,
-            });
-            setName(getNewName(names.size + 1));
-          }}
-          disabled={names.has(name)}
-        >
-          Добавить
-        </button>
-      </div>
-      <ul>
-        {items.map((fenData, index) => (
-          <FenItem
-            key={fenData.id}
-            {...fenData}
-            curentFen={currentFen}
-            onApply={() => {
-              updateArgs({
-                fen: fenData.fen,
-              });
-              defer(() => {
-                forceRerender();
-              });
+      <Container>
+        <H1>Fen control</H1>
+        <Header>
+          <Form.Input
+            style={{
+              width: 100,
             }}
-            onDelete={() => {
-              removeAt(index);
-            }}
-            onSave={(name, fen) => {
-              updateAt(index, {
-                ...fenData,
-                name,
-                fen,
-              });
-            }}
-            canSave={(name) => {
-              return !names.has(name);
-            }}
+            value={name}
+            onChange={changeName}
           />
-        ))}
-      </ul>
+          <Form.Input
+            style={{
+              width: 350,
+            }}
+            value={currentFen}
+            onChange={changeFen}
+          />
+          <IconButton
+            title="Добавить"
+            onClick={() => {
+              push({
+                id: newFenId(),
+                name,
+                fen: currentFen,
+              });
+              setName(getNewName(names.size + 1));
+            }}
+            disabled={names.has(name)}
+          >
+            <Icons.AddIcon />
+          </IconButton>
+        </Header>
+        <List>
+          {items.map((fenData, index) => (
+            <FenItem
+              key={fenData.id}
+              {...fenData}
+              curentFen={currentFen}
+              onApply={() => {
+                updateArgs({
+                  fen: fenData.fen,
+                });
+                defer(() => {
+                  forceRerender();
+                });
+              }}
+              onDelete={() => {
+                removeAt(index);
+              }}
+              onSave={(name, fen) => {
+                updateAt(index, {
+                  ...fenData,
+                  name,
+                  fen,
+                });
+              }}
+              canSave={(name) => {
+                return !names.has(name);
+              }}
+            />
+          ))}
+        </List>
+      </Container>
     </AddonPanel>
   );
 });

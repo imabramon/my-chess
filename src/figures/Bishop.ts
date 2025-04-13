@@ -1,20 +1,11 @@
 import WhiteBishop from "../assets/White_Bishop.png";
 import BlackBishop from "../assets/Black_Bishop.png";
-import {
-  FigureInfo,
-  FigureType,
-  FigureColor,
-  GetMoves,
-  Coords,
-} from "../types";
+import { FigureType, GetMoves, Coords } from "../types";
+import { BaseFigure } from "./Base";
 
-export class Bishop implements FigureInfo {
+export class Bishop extends BaseFigure {
   type: FigureType = "Bishop";
-  color: FigureColor = "White";
-
-  constructor(color: FigureColor = "White") {
-    this.color = color;
-  }
+  _fen = "B";
 
   legalMoves: GetMoves = (current: Coords, size: Coords): string[] => {
     const moves: string[] = [];

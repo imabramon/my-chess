@@ -17,6 +17,7 @@ export interface FigureInfo {
   legalMoves: GetMoves;
   legalAttacks: GetMoves;
   get image(): string;
+  get fen(): string;
 }
 
 export type FigureType =

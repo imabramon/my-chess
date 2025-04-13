@@ -2,7 +2,7 @@ import { FC, useContext } from "react";
 import styled from "styled-components";
 import { CELL_SIZE } from "../constants";
 import { Dropable } from "../dnd/Dropable";
-import { BoardContext } from "./Board";
+import { BoardContext } from "./Board/Board";
 import { Figure } from "./Figure";
 import { FigureInfo, Nullable } from "../types";
 

@@ -17,7 +17,7 @@ const Piece: React.FC<PieceProps> = ({ id, position, movePiece }) => {
     type: ItemTypes.PIECE,
     item: { id, position },
     collect: (monitor) => {
-      console.log("calll collect", monitor.isDragging());
+      // // console.log("calll collect", monitor.isDragging());
       return {
         isDragging: !!monitor.isDragging(),
       };

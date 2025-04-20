@@ -56,10 +56,7 @@ const getCellComponent = (isUnderAttack: boolean, indicator: number) => {
 export const Cell: FC<CellProps> = ({ row, column, data }) => {
   const boardContext = useContext(BoardContext);
 
-  // @ts-ignore
-  const move: BoardContext.move = boardContext.move;
   const movebleCells = boardContext.moveCells;
-  const attackCells = boardContext.attackCells;
   const startMove = boardContext.startMove;
   const moveTo = boardContext.moveTo;
 
@@ -67,7 +64,7 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
   const canMove = !!movebleCells?.has(cordsId);
 
   const hasFigure = !!data;
-  const isUnderAttack = !!attackCells?.has(cordsId) && hasFigure;
+  const isUnderAttack = !!movebleCells?.has(cordsId) && hasFigure;
 
   const indicator = row + column;
   const CellComponent = getCellComponent(isUnderAttack, indicator);
@@ -93,8 +90,8 @@ export const Cell: FC<CellProps> = ({ row, column, data }) => {
             row={row}
             column={column}
             data={data}
-            onClick={() => startMove?.(column, row, data)}
-            onDrag={() => startMove?.(column, row, data)}
+            onClick={() => startMove?.(column, row)}
+            onDrag={() => startMove?.(column, row)}
           />
         ) : (
           `${row}, ${column}`

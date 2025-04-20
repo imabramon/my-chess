@@ -32,7 +32,7 @@ export const Dragable: FC<DragableProps> = (props) => {
   const { setData, data: currentData, drop, setX, setY } = useDrag();
 
   const onDrag = () => {
-    console.log("calll", "onDrag");
+    // console.log("calll", "onDrag");
     propsOnDrag?.();
   };
 
@@ -40,7 +40,7 @@ export const Dragable: FC<DragableProps> = (props) => {
     if (!ref.current) return;
 
     const callback = (e: MouseEvent) => {
-      //   console.log("calll", "move");
+      //   // console.log("calll", "move");
       const element = ref.current;
       if (!element) return;
 
@@ -51,12 +51,12 @@ export const Dragable: FC<DragableProps> = (props) => {
         isDraging.current && (prev ? isMouseMove(prev, current) : true);
 
       if (isDrag) {
-        console.log("calll on move", current, prev);
+        // console.log("calll on move", current, prev);
         if (!isBeginDragCalled.current) {
           onDrag?.();
           isBeginDragCalled.current = true;
         }
-        // console.log("calll", "isDraging");
+        // // console.log("calll", "isDraging");
         element.style.position = "fixed";
         element.style.top = `${e.clientY}px`;
         element.style.left = `${e.clientX}px`;
@@ -64,7 +64,7 @@ export const Dragable: FC<DragableProps> = (props) => {
         setX(e.clientX);
         setY(e.clientY);
       } else {
-        // console.log("calll", "no draging");
+        // // console.log("calll", "no draging");
         element.style.position = "static";
       }
     };
@@ -83,7 +83,7 @@ export const Dragable: FC<DragableProps> = (props) => {
     isDraging.current = true;
     mouseCoords.current = cordsFromMouse(e);
     isBeginDragCalled.current = false;
-    console.log("calll", "down", mouseCoords.current);
+    // console.log("calll", "down", mouseCoords.current);
   };
 
   const onMouseUp: MouseEventHandler = () => {
